@@ -1,8 +1,8 @@
 {
-  "name": "vue-img-hover-zoomin",
-  "version": "0.1.0-Alpha",
+  "name": "vue-img-hover-zoom-in",
+  "version": "0.1.1",
   "private": false,
-  "main": "./dist/vue-img-hover-zoomin.common.js",
+  "main": "./dist/vue-img-hover-zoom-in.common.js",
   "files": [
     "dist/*",
     "src/*",

@@ -37,6 +37,7 @@ export default {
     }
   },
   computed: {
+    // 放大图的element元素
     imgEle () {
       let imgSrc = ''
       if (this.e &&
@@ -44,7 +45,7 @@ export default {
         this.e.target.tagName.toLowerCase() === 'img' &&
         this.e.target.classList.contains('hover-img')) {
         imgSrc = this.e.target.getAttribute('src')
-        imgSrc = this.imgSrcFormat(imgSrc)
+        imgSrc = this.imgSrcFormat(imgSrc) ? this.imgSrcFormat(imgSrc) : imgSrc
 
         let img = new Image()
         img.src = imgSrc
@@ -52,16 +53,15 @@ export default {
       }
       return null
     },
+    // 放大图片的src
     imgSrc () {
-      let src = this.imgEle && this.imgEle.getAttribute('src')
-      return src || ''
+      return this.imgEle && this.imgEle.getAttribute('src')
     },
+    // 图片原始宽高比
     aspectRatio () {
-      // complete不能判断图片加载成功或失败， 加载失败naturalHeight也不为0；
       if (helpers.isImgLoaded(this.imgEle)) {
         return this.imgEle.naturalWidth / this.imgEle.naturalHeight
       }
-      return false
     },
     // 容器四个边界点坐标，顺序：顺时针
     ctBorderPoints () {
@@ -82,13 +82,24 @@ export default {
     imgSrcFormat (src) {
       return src
     },
+    // 设置event对象
+    setEvent (e) {
+      this.e = e
+    },
+    // 设置是否可以显示；以下情况不可以显示 1.右键菜单
+    setCanShow (flag) {
+      this.canShow = flag
+    },
+    setShow (flag) {
+      this.show = flag
+    },
     // 获取document.body的尺寸信息
     _getDocumentDims () {
       let height = document.documentElement.clientHeight || document.body.clientHeight
       let width = document.documentElement.clientWidth || document.body.clientWidth
       this.documentDims = { height, width }
     },
-    // 计算放大图所在容器的边界尺寸
+    // 计算放大图所在容器的边界尺寸信息
     _computeContainerDimension (el) {
       let ctDims = {
         borderLeft: 0,
@@ -114,17 +125,7 @@ export default {
         ctDims.width = document.documentElement.clientWidth || document.body.clientWidth
       }
       this.ctDims = ctDims
-    },
-    // 设置event对象
-    setEvent (e) {
-      this.e = e
-    },
-    // 设置是否可以显示；以下情况不可以显示 1.右键菜单
-    setCanShow (flag) {
-      this.canShow = flag
-    },
-    setShow (flag) {
-      this.show = flag
+      console.log(ctDims, 'ctDims');
     },
     // 获取图片显示位置的矩形对角点
     _getPoints (point) {
@@ -195,8 +196,9 @@ export default {
     }
   },
   watch: {
+    // 容器元素的id
     containerId (id) {
-      let containerEl = document.getElementById(id)
+      let containerEl = id ? document.getElementById(id) : (document.body || document.documentElement)
       this._computeContainerDimension(containerEl)
     },
     e (val) {
@@ -237,6 +239,10 @@ export default {
   },
   mounted () {
     this._getDocumentDims()
+
+    if (!this.ctDims.width) {
+      this._computeContainerDimension()
+    }
   }
 }
 </script>
@@ -250,9 +256,8 @@ export default {
   .hover-zoom-img {
     border: 5px solid #eee;
     border-radius: 5px;
-    background-color: #eee;
+    background-color: #fff;
     box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
   }
 }
-
 </style>

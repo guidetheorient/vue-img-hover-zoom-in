@@ -2,7 +2,7 @@
  * @Author: guidetheorient
  * @Date: 2018-05-17 09:26:15
  * @Last Modified by: guidetheorient
- * @Last Modified time: 2018-11-06 13:13:23
+ * @Last Modified time: 2018-11-07 21:28:24
  */
 import hoverImgComponent from './index.vue'
 
@@ -17,11 +17,11 @@ const hoverZoomImg = {
       offsetMouseX = offsetMouseY = 0
     }
 
-    const hoverImgExtend = Vue.extend(hoverImgComponent)
+    const HoverImgExtend = Vue.extend(hoverImgComponent)
 
     let instance
     if (!instance) {
-      instance = new hoverImgExtend({
+      instance = new HoverImgExtend({
         el: document.createElement('div'),
         data: {
           offsetMouseX,
@@ -51,8 +51,8 @@ const hoverZoomImg = {
 
     Vue.directive('hover-zoom-img', {
       bind (el, binding) {
-        // console.log(el, binding, 'binding');
-        let { containerId } = binding.value
+        // console.log(el, binding, 'binding')
+        let { containerId } = binding.value || {}
         instance.containerId = containerId
         el.addEventListener('mouseenter', (e) => {
           instance.setShow(true)
