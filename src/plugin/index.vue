@@ -1,16 +1,12 @@
 <template>
-  <div class="hover-zoom-img-wrapper" v-if="canShow && show" :style="{left: imgL, top: imgT}">
+  <div class="hover-zoom-img-wrapper" v-if="canShow && show && imgSrc && aspectRatio" :style="{transform: `translate(${imgL}, ${imgT})`}">
     <img class="hover-zoom-img" :src="imgSrc" :style="{width: imgW, height: imgH}">
   </div>
-  <!-- <transition name="fade"> -->
-    <!-- <div class="hover-zoom-img-wrapper" v-if="canShow && show && imgSrc && aspectRatio" :style="{left: imgL, top: imgT}">
-      <img class="hover-zoom-img" :src="imgSrc" :style="{width: imgW, height: imgH}">
-    </div> -->
-  <!-- </transition> -->
 </template>
 
 <script>
 import helpers from './helpers'
+import ResizeObserver from 'resize-observer-polyfill'
 
 export default {
   data () {
@@ -18,46 +14,33 @@ export default {
       documentDims: {}, // document/body的尺寸信息
 
       containerId: '', // 放大图所在容器id
+      containerEl: null, // 容器元素
       ctDims: {}, // 放大图所在容器尺寸对象
 
       offsetMouseX: 0, // 离鼠标距离x
       offsetMouseY: 0, // 离鼠标距离y
 
       e: null, // event对象
-      show: true, // 是否显示
-      canShow: true, // 是否允许显示
+      show: false, // 是否显示
+      canShow: false, // 是否允许显示
       // delayShow: .5, // 延迟显示
       // delayHide: .3, // 延迟隐藏
+
+      imgEle: '', // 放大图的element元素
+      imgSrc: '', // 放大图片的src
 
       // 最终位置
       imgW: '',
       imgH: '',
       imgL: '',
-      imgT: ''
+      imgT: '',
+
+      hideTimer: null
     }
   },
   computed: {
-    // 放大图的element元素
-    imgEle () {
-      let imgSrc = ''
-      if (this.e &&
-        this.e.target &&
-        this.e.target.tagName.toLowerCase() === 'img' &&
-        this.e.target.classList.contains('hover-img')) {
-        imgSrc = this.e.target.getAttribute('src')
-        imgSrc = this.imgSrcFormat(imgSrc) ? this.imgSrcFormat(imgSrc) : imgSrc
-
-        let img = new Image()
-        img.src = imgSrc
-        return img
-      }
-      return null
-    },
-    // 放大图片的src
-    imgSrc () {
-      return this.imgEle && this.imgEle.getAttribute('src')
-    },
     // 图片原始宽高比
+    // aspectRatio会导致放大图暂时不不显示，但又不能忽视，因为放大图是重新请求的
     aspectRatio () {
       if (helpers.isImgLoaded(this.imgEle)) {
         return this.imgEle.naturalWidth / this.imgEle.naturalHeight
@@ -78,6 +61,24 @@ export default {
     }
   },
   methods: {
+    _getImgSrc () {
+      let imgSrc = ''
+      if (this.e.target.tagName.toLowerCase() === 'img' &&
+      this.e.target.classList.contains('hover-img')) {
+        imgSrc = this.e.target.getAttribute('src')
+      }
+      imgSrc = this.imgSrcFormat(imgSrc) ? this.imgSrcFormat(imgSrc) : imgSrc
+      this.imgSrc = imgSrc
+    },
+    _genImgEle () {
+      if (this.imgSrc) {
+        let img = new Image()
+        img.src = this.imgSrc
+        this.imgEle = img
+        return
+      }
+      this.imgEle = null
+    },
     // 获取图片src默认function
     imgSrcFormat (src) {
       return src
@@ -86,12 +87,21 @@ export default {
     setEvent (e) {
       this.e = e
     },
-    // 设置是否可以显示；以下情况不可以显示 1.右键菜单
+    // 设置是否能显示；以下情况不可以显示 1.右键菜单
     setCanShow (flag) {
       this.canShow = flag
     },
     setShow (flag) {
-      this.show = flag
+      if (flag) {
+        this.show = flag
+      } else {
+        clearTimeout(this.hideTimer)
+        this.hideTimer = setTimeout(() => {
+          if (!this.imgSrc) {
+            this.show = flag
+          }
+        }, 200)
+      }
     },
     // 获取document.body的尺寸信息
     _getDocumentDims () {
@@ -100,7 +110,7 @@ export default {
       this.documentDims = { height, width }
     },
     // 计算放大图所在容器的边界尺寸信息
-    _computeContainerDimension (el) {
+    _computeContainerDimension () {
       let ctDims = {
         borderLeft: 0,
         borderRight: 0,
@@ -110,8 +120,8 @@ export default {
         height: 0
       }
       // 传入了id选择器
-      if (el) {
-        let dimension = el.getBoundingClientRect()
+      if (this.containerEl) {
+        let dimension = this.containerEl.getBoundingClientRect()
         ctDims.borderLeft = dimension.left
         ctDims.borderRight = parseInt(this.documentDims.width - dimension.right)
         ctDims.borderTop = dimension.top
@@ -125,7 +135,6 @@ export default {
         ctDims.width = document.documentElement.clientWidth || document.body.clientWidth
       }
       this.ctDims = ctDims
-      console.log(ctDims, 'ctDims');
     },
     // 获取图片显示位置的矩形对角点
     _getPoints (point) {
@@ -193,18 +202,43 @@ export default {
         imgT = pointA.y - height
       }
       return { imgL, imgT }
+    },
+    // 监听容器元素的尺寸变化
+    _observerContainer () {
+      if (!this.containerEl) return
+      this._destroyObserver()
+      this.observer = new ResizeObserver((entries) => {
+        this.throttleComputeContainerDimension()
+      })
+      this.observer.observe(this.containerEl)
+    },
+    // 销毁resizeObserver
+    _destroyObserver () {
+      if (!this.observer) return
+      if (this.containerEl) {
+        this.observer.unobserve(this.containerEl)
+      }
+      this.observer.disconnect()
+      this.observer = null
     }
   },
   watch: {
     // 容器元素的id
     containerId (id) {
-      let containerEl = id ? document.getElementById(id) : (document.body || document.documentElement)
-      this._computeContainerDimension(containerEl)
+      this.containerEl = document.getElementById(id)
+      if (!this.containerEl) return
+      // 容器元素变化，重新计算容器尺寸
+      this._computeContainerDimension()
+      this._observerContainer()
     },
-    e (val) {
+    e (val, oldVal) {
       if (!val || !this.canShow || !this.ctDims.width) return
-      // console.log(this.canShow, this.show, this.aspectRatio, this.imgSrc, this.imgEle)
-      // if(!this.canShow || !this.show || !this.aspectRatio || !this.imgEle) return;
+      // 获取图片地址
+      if (oldVal && val.target !== oldVal.target) {
+        this._getImgSrc()
+      }
+      this._genImgEle()
+
       let eRelativePos = {
         x: this.e.pageX - this.ctDims.borderLeft,
         y: this.e.pageY - this.ctDims.borderTop
@@ -217,24 +251,19 @@ export default {
         eRelativePos.x >= this.ctDims.width ||
         eRelativePos.y >= this.ctDims.height ||
         !this.ctBorderPoints.length ||
-        !this.aspectRatio
-      ) {
-        this.setShow(false)
+        !this.aspectRatio) {
         return
       }
       let { pointA, pointB } = this._getPoints(eRelativePos)
       // 图片最大可用宽高
       let imgMaxW = Math.abs(pointB.x - pointA.x)
       let imgMaxH = Math.abs(pointB.y - pointA.y)
-      // console.log('aspectRatio',this.aspectRatio);
       let { imgW, imgH } = this._getImgDims(imgMaxW, imgMaxH, this.aspectRatio)
       let { imgL, imgT } = this._getImgPos(imgW, imgH, eRelativePos, pointA)
       this.imgW = imgW + 'px'
       this.imgH = imgH + 'px'
       this.imgL = imgL + this.ctDims.borderLeft + 'px'
       this.imgT = imgT + this.ctDims.borderTop + 'px'
-
-      !this.show && this.setShow(true)
     }
   },
   mounted () {
@@ -243,6 +272,12 @@ export default {
     if (!this.ctDims.width) {
       this._computeContainerDimension()
     }
+
+    this.throttleComputeContainerDimension = helpers.throttle(this._computeContainerDimension, 200)
+  },
+  beforeDestroy () {
+    clearTimeout(this.hideTimer)
+    this.hideTimer = null
   }
 }
 </script>
@@ -251,13 +286,15 @@ export default {
 .hover-zoom-img-wrapper {
   pointer-events: none;
   position: fixed;
+  left: 0;
+  top: 0;
   z-index: 3000;
   transition: all .2s;
   .hover-zoom-img {
     border: 5px solid #eee;
     border-radius: 5px;
     background-color: #fff;
-    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   }
 }
 </style>

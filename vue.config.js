@@ -28,34 +28,12 @@ module.exports = {
     },
     resolve: {
       alias: {
-        'components': resolve('src/components'),
-        'base': resolve('src/components/base'),
-        'common': resolve('src/common'),
-        'api': resolve('src/api'),
-        'views': resolve('src/views')
+        'components': resolve('src/components')
       }
     }
   },
   css: {
     extract: false
   },
-  devServer: {
-    proxy: {
-      '/hb2/rest': {
-        target: 'http://36.152.32.131:19080',
-        // target: 'http://192.168.1.252:19080',
-        changeOrigin: true,
-        secure: false,
-        autoRewrite: true
-      },
-      '/srv1': {
-        target: 'http://36.152.32.131:19080',
-        // target: 'http://192.168.1.252:19080',
-        changeOrigin: true,
-        secure: false
-      }
-    }
-  },
-
   productionSourceMap: false
 }

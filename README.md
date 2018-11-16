@@ -8,7 +8,7 @@
 
 :satisfied: For fun
 
-V 0.1.0-Alpha Just Experimental
+V 0.2.0 Just Experimental
 
 ## Install
 
@@ -24,6 +24,9 @@ import imgHoverZoomIn from 'vue-img-hover-zoom-in';
 // all options are not necessary
 // 选项中的属性都不是必须的
 Vue.use(imgHoverZoomIn, {
+  // it'd better set 'hasVueRouter' true if your project use vue-router
+  // 项目使用了vue-router，最好加上此项
+  hasVueRouter: true,
   // img offset from mouse
   // 为放大图离鼠标的x, y方向偏移距离
   offsetMouseX: 20,

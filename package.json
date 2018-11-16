@@ -1,6 +1,6 @@
 {
   "name": "vue-img-hover-zoom-in",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": false,
   "main": "./dist/vue-img-hover-zoom-in.common.js",
   "files": [
@@ -17,6 +17,7 @@
     "build-lib": "vue-cli-service build --target lib ./src/plugin/index.js"
   },
   "dependencies": {
+    "resize-observer-polyfill": "^1.5.0",
     "vue": "^2.5.17"
   },
   "devDependencies": {
@@ -54,5 +55,14 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "homepage": "https://github.com/guidetheorient/vue-img-hover-zoom-in#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guidetheorient/vue-img-hover-zoom-in"
+  },
+  "bugs": {
+    "url": "https://github.com/guidetheorient/vue-img-hover-zoom-in/issues"
+  },
+  "license": "MIT"
 }

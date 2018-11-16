@@ -2,18 +2,15 @@
  * @Author: guidetheorient
  * @Date: 2018-05-17 09:26:15
  * @Last Modified by: guidetheorient
- * @Last Modified time: 2018-11-07 21:28:24
+ * @Last Modified time: 2018-11-16 16:37:54
  */
 import hoverImgComponent from './index.vue'
 
 const hoverZoomImg = {
   install (Vue, options = {}) {
-    let { offsetMouseX, offsetMouseY, delayShow, delayHide, imgSrcFormat } = options
+    let { offsetMouseX, offsetMouseY, delayShow, delayHide, imgSrcFormat, hasVueRouter } = options
     if (typeof offsetMouseX !== 'number' ||
       typeof offsetMouseX !== 'number') {
-      console.log(`
-          offsetMouseX and offsetMouseX must be number type.
-        `)
       offsetMouseX = offsetMouseY = 0
     }
 
@@ -39,7 +36,7 @@ const hoverZoomImg = {
 
     document.addEventListener('click', e => {
       Vue.nextTick(() => {
-        instance.setCanShow(true)
+        !instance.canShow && instance.setCanShow(true)
       })
     })
     document.addEventListener('contextmenu', (e) => {
@@ -49,13 +46,27 @@ const hoverZoomImg = {
       instance && instance.setEvent(e)
     })
 
+    if (hasVueRouter) {
+      Vue.mixin({
+        beforeRouteEnter (to, from, next) {
+          !instance.canShow && instance.setCanShow(true)
+          next()
+        },
+        beforeRouteLeave (to, from, next) {
+          instance.canShow && instance.setCanShow(false)
+          instance.show && instance.setShow(false)
+          next()
+        }
+      })
+    }
+
     Vue.directive('hover-zoom-img', {
       bind (el, binding) {
-        // console.log(el, binding, 'binding')
         let { containerId } = binding.value || {}
         instance.containerId = containerId
         el.addEventListener('mouseenter', (e) => {
           instance.setShow(true)
+          instance.setEvent(e)
         })
         el.addEventListener('mouseleave', (e) => {
           instance.setShow(false)
@@ -63,13 +74,15 @@ const hoverZoomImg = {
       },
       inserted () {
         // 每个元素都绑定了一遍，感觉哪里不对
-        !instance.canShow && instance.setCanShow(true)
-        // console.log('inserted')
+        if (!hasVueRouter) {
+          !instance.canShow && instance.setCanShow(true)
+        }
       },
       unbind () {
-        instance.canShow && instance.setCanShow(false)
-        instance.show && instance.setShow(false)
-        console.log('unbind')
+        if (!hasVueRouter) {
+          instance.canShow && instance.setCanShow(false)
+          instance.show && instance.setShow(false)
+        }
       }
     })
   }
