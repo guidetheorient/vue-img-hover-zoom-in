@@ -22,7 +22,7 @@ export default {
 
       e: null, // event对象
       show: false, // 是否显示
-      canShow: false, // 是否允许显示
+      canShow: true, // 是否允许显示
       // delayShow: .5, // 延迟显示
       // delayHide: .3, // 延迟隐藏
 
@@ -91,16 +91,22 @@ export default {
     setCanShow (flag) {
       this.canShow = flag
     },
-    setShow (flag) {
+    // ignoreImgSrc: 不管有无imgSrc都要置为false
+    setShow (flag, ignoreImgSrc) {
+      clearTimeout(this.hideTimer)
+      this.hideTimer = null
       if (flag) {
         this.show = flag
       } else {
-        clearTimeout(this.hideTimer)
+        // 使用timer，是因为多图片过渡，平滑些
         this.hideTimer = setTimeout(() => {
+          if (ignoreImgSrc) {
+            this.imgSrc = null
+          }
           if (!this.imgSrc) {
             this.show = flag
           }
-        }, 200)
+        }, 100)
       }
     },
     // 获取document.body的尺寸信息
@@ -232,11 +238,14 @@ export default {
       this._observerContainer()
     },
     e (val, oldVal) {
-      if (!val || !this.canShow || !this.ctDims.width) return
+      if (!val || !this.canShow || !this.ctDims.width) {
+        this.imgSrc = null
+        this.imgEle = null
+      };
       // 获取图片地址
-      if (oldVal && val.target !== oldVal.target) {
-        this._getImgSrc()
-      }
+      // if(oldVal && val.target !== oldVal.target) {
+      this._getImgSrc()
+      // }
       this._genImgEle()
 
       let eRelativePos = {
@@ -289,7 +298,7 @@ export default {
   left: 0;
   top: 0;
   z-index: 3000;
-  transition: all .2s;
+  transition: all .1s;
   .hover-zoom-img {
     border: 5px solid #eee;
     border-radius: 5px;

@@ -1,6 +1,6 @@
 {
   "name": "vue-img-hover-zoom-in",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "private": false,
   "main": "./dist/vue-img-hover-zoom-in.common.js",
   "files": [
