@@ -10,6 +10,10 @@
 
 V 0.2.2 Just Experimental
 
+## Preview
+
+![](./src/assets/preview.gif)
+
 ## Install
 
 ```bash
