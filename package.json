@@ -1,12 +1,11 @@
 {
   "name": "vue-img-hover-zoom-in",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "private": false,
   "main": "./dist/vue-img-hover-zoom-in.common.js",
   "files": [
-    "dist/*",
-    "src/*",
-    "public/*",
+    "dist/*.js",
+    "src/plugins/*",
     "*.json",
     "*.js"
   ],
@@ -14,7 +13,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "build-lib": "vue-cli-service build --target lib ./src/plugin/index.js"
+    "build-lib": "vue-cli-service build --target lib ./src/plugin/index.js",
+    "publish": "npm --registry http://registry.npmjs.org publish --access public"
   },
   "dependencies": {
     "resize-observer-polyfill": "^1.5.0",
@@ -30,6 +30,7 @@
     "eslint-plugin-vue": "^5.0.0-0",
     "node-sass": "^4.10.0",
     "sass-loader": "^7.1.0",
+    "vue-router": "^3.3.4",
     "vue-template-compiler": "^2.5.17"
   },
   "eslintConfig": {

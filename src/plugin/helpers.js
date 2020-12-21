@@ -1,4 +1,18 @@
 const helpers = {
+  getElementVisiblePositionInBrowser (el) {
+    let scrollTop = 0
+    const { top } = el.getBoundingClientRect()
+
+    do {
+      scrollTop += el.scrollTop
+      el = el.offsetParent
+    } while (el)
+
+    return scrollTop + top
+  },
+  isWindow (para) {
+    return para instanceof Window || para === window
+  },
   /**
    * 判断图片是否加载成功
    * @param {DOM element} img

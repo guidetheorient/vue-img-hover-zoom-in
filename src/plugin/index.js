@@ -2,19 +2,20 @@
  * @Author: guidetheorient
  * @Date: 2018-05-17 09:26:15
  * @Last Modified by: guidetheorient
- * @Last Modified time: 2018-11-19 11:54:02
+ * @Last Modified time: 2020-12-21 15:24:37
  */
-import hoverImgComponent from './index.vue'
+import HoverImgComponent from './index.vue'
+import { DATA_HOVER_ZOOM } from './const'
 
 const hoverZoomImg = {
   install (Vue, options = {}) {
-    let { offsetMouseX, offsetMouseY, delayShow, delayHide, imgSrcFormat, hasVueRouter } = options
+    let { offsetMouseX, offsetMouseY, delayShow, delayHide, imgSrcFormat } = options
     if (typeof offsetMouseX !== 'number' ||
       typeof offsetMouseX !== 'number') {
       offsetMouseX = offsetMouseY = 0
     }
 
-    const HoverImgExtend = Vue.extend(hoverImgComponent)
+    const HoverImgExtend = Vue.extend(HoverImgComponent)
 
     let instance
     if (!instance) {
@@ -68,6 +69,7 @@ const hoverZoomImg = {
       bind (el, binding = {}) {
         let { containerId } = binding.value || {}
         instance.containerId = containerId
+        el.setAttribute(DATA_HOVER_ZOOM, true)
       },
       inserted (el) {
         el.addEventListener('mouseenter', onMouseEnter)
@@ -76,6 +78,7 @@ const hoverZoomImg = {
       unbind (el) {
         el.removeEventListener('mouseenter', onMouseEnter)
         el.removeEventListener('mouseleave', onMouseLeave)
+        el.removeAttribute(DATA_HOVER_ZOOM)
         instance.show && instance.setShow(false)
       }
     })
