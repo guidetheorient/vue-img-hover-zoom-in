@@ -2,14 +2,15 @@
  * @Author: guidetheorient
  * @Date: 2018-05-17 09:26:15
  * @Last Modified by: guidetheorient
- * @Last Modified time: 2020-12-21 15:24:37
+ * @Last Modified time: 2020-12-22 10:19:04
  */
 import HoverImgComponent from './index.vue'
 import { DATA_HOVER_ZOOM } from './const'
 
+// TODO: delayShow, delayHide
 const hoverZoomImg = {
   install (Vue, options = {}) {
-    let { offsetMouseX, offsetMouseY, delayShow, delayHide, imgSrcFormat } = options
+    let { offsetMouseX, offsetMouseY, imgSrcFormat } = options
     if (typeof offsetMouseX !== 'number' ||
       typeof offsetMouseX !== 'number') {
       offsetMouseX = offsetMouseY = 0
@@ -67,7 +68,7 @@ const hoverZoomImg = {
 
     Vue.directive('hover-zoom-img', {
       bind (el, binding = {}) {
-        let { containerId } = binding.value || {}
+        const { containerId } = binding.value || {}
         instance.containerId = containerId
         el.setAttribute(DATA_HOVER_ZOOM, true)
       },

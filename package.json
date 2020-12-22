@@ -1,14 +1,7 @@
 {
   "name": "vue-img-hover-zoom-in",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": false,
-  "main": "./dist/vue-img-hover-zoom-in.common.js",
-  "files": [
-    "dist/*.js",
-    "src/plugins/*",
-    "*.json",
-    "*.js"
-  ],
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -16,18 +9,30 @@
     "build-lib": "vue-cli-service build --target lib ./src/plugin/index.js",
     "publish": "npm --registry http://registry.npmjs.org publish --access public"
   },
+  "main": "./dist/vue-img-hover-zoom-in.common.js",
+  "files": [
+    "dist/*.js",
+    "src/plugin/*",
+    "*.json",
+    "*.js"
+  ],
   "dependencies": {
     "resize-observer-polyfill": "^1.5.0",
     "vue": "^2.5.17"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.0.3",
-    "@vue/cli-plugin-eslint": "^3.0.3",
-    "@vue/cli-service": "^3.0.3",
-    "@vue/eslint-config-standard": "^4.0.0",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.8.0",
-    "eslint-plugin-vue": "^5.0.0-0",
+    "@vue/cli-plugin-babel": "^4.5.9",
+    "@vue/cli-plugin-eslint": "^4.5.9",
+    "@vue/cli-service": "^4.5.9",
+    "@vue/eslint-config-standard": "^5.1.2",
+    "babel-eslint": "^10.1.0",
+    "core-js": "^3.6.5",
+    "eslint": "^6.7.2",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-vue": "^6.2.2",
     "node-sass": "^4.10.0",
     "sass-loader": "^7.1.0",
     "vue-router": "^3.3.4",
@@ -53,17 +58,19 @@
     }
   },
   "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
+    "ff >= 51",
+    "ie >= 11",
+    "chrome >= 55",
+    "last 2 edge versions",
+    "last 2 safari versions"
   ],
-  "homepage": "https://github.com/guidetheorient/vue-img-hover-zoom-in#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/guidetheorient/vue-img-hover-zoom-in"
-  },
   "bugs": {
     "url": "https://github.com/guidetheorient/vue-img-hover-zoom-in/issues"
   },
-  "license": "MIT"
+  "homepage": "https://github.com/guidetheorient/vue-img-hover-zoom-in#readme",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guidetheorient/vue-img-hover-zoom-in"
+  }
 }

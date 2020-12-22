@@ -1,6 +1,4 @@
-
-
-# vue-img-hover-zoomin
+# vue-img-hover-zoom-in
 
 > An Vue js plugin for PC that show an auto-enlarged image when hovering on it
 
@@ -8,7 +6,7 @@
 
 :satisfied: For fun
 
-V 0.3 Just Experimental
+V 0.4.0 Just Experimental
 
 ## Preview
 

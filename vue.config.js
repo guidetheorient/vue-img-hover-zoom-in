@@ -1,26 +1,29 @@
 // vue.config.js
 const path = require('path')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 
 function resolve (dir) {
   return path.join(__dirname, dir)
 }
 
 module.exports = {
-  // 注入文件的publicPath
-  baseUrl: process.env.NODE_ENV === 'production' ? './' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
 
   configureWebpack: {
     plugins: [
-      new UglifyJsPlugin({
-        uglifyOptions: {
+      new TerserPlugin({
+        cache: true,
+        parallel: true,
+        extractComments: true,
+        // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+        terserOptions: {
           compress: {
-            warnings: false,
             drop_console: true
+          },
+          output: {
+            beautify: false
           }
-        },
-        // sourceMap: config.build.productionSourceMap,
-        parallel: true
+        }
       })
     ],
     output: {
@@ -28,7 +31,7 @@ module.exports = {
     },
     resolve: {
       alias: {
-        'components': resolve('src/components')
+        components: resolve('src/components')
       }
     }
   },
